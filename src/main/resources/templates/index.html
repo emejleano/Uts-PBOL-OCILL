@@ -5,15 +5,393 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Library Management System</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: #ffe6f0;
+            color: #ff66b2;
+        }
+        h2, h3, h4 {
+            color: #ff3385;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .btn-primary {
+            background-color: #ff66b2;
+            border-color: #ff66b2;
+        }
+        .btn-primary:hover {
+            background-color: #ff3385;
+            border-color: #ff3385;
+        }
+        .btn-warning {
+            background-color: #ffc2d1;
+            border-color: #ffc2d1;
+            color: #ff3385;
+        }
+        .btn-danger {
+            background-color: #ff4d94;
+            border-color: #ff4d94;
+        }
+        table thead {
+            background-color: #ffe6f0;
+            color: #ff3385;
+        }
+    </style>
 </head>
 <body>
     <div class="container mt-5">
-        <h2 class="text-center">Welcome to Library Management System</h2>
-        <div class="text-center">
-            <a href="/books.html" class="btn btn-primary">Manage Books</a>
-            <a href="/members.html" class="btn btn-secondary">Manage Members</a>
-            <a href="/transactions.html" class="btn btn-success">Manage Loan Transactions</a>
+        <h2 class="text-center">Library Management System</h2>
+
+        <!-- Daftar Buku -->
+        <div class="mt-5">
+            <h3>Daftar Buku</h3>
+            <table class="table table-bordered" id="bookTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Judul</th>
+                        <th>Penulis</th>
+                        <th>ISBN</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <!-- Form Buku -->
+            <h4>Tambah/Perbarui Buku</h4>
+            <form id="bookForm">
+                <input type="hidden" id="bookId">
+                <div class="form-group">
+                    <label for="title">Judul:</label>
+                    <input type="text" id="title" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="author">Penulis:</label>
+                    <input type="text" id="author" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="isbn">ISBN:</label>
+                    <input type="text" id="isbn" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan Buku</button>
+            </form>
+        </div>
+
+        <!-- Daftar Anggota -->
+        <div class="mt-5">
+            <h3>Daftar Anggota</h3>
+            <table class="table table-bordered" id="memberTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama</th>
+                        <th>Email</th>
+                        <th>Tanggal Pendaftaran</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <!-- Form Anggota -->
+            <h4>Tambah/Perbarui Anggota</h4>
+            <form id="memberForm">
+                <input type="hidden" id="memberId">
+                <div class="form-group">
+                    <label for="name">Nama:</label>
+                    <input type="text" id="name" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="membershipDate">Tanggal Pendaftaran:</label>
+                    <input type="date" id="membershipDate" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan Anggota</button>
+            </form>
+        </div>
+
+        <!-- Daftar Transaksi Peminjaman -->
+        <div class="mt-5">
+            <h3>Daftar Transaksi Peminjaman</h3>
+            <h4>(Silahkan Refresh halaman untuk melihat data yang telah anda tambahkan)</h4>
+            <table class="table table-bordered" id="loanTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Buku</th>
+                        <th>Anggota</th>
+                        <th>Tanggal Peminjaman</th>
+                        <th>Tanggal Pengembalian</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+
+            <!-- Form Transaksi Peminjaman -->
+            <h4>Tambah/Perbarui Transaksi Peminjaman</h4>
+            <form id="loanForm">
+                <input type="hidden" id="loanId">
+                <div class="form-group">
+                    <label for="book">Buku:</label>
+                    <select id="book" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="member">Anggota:</label>
+                    <select id="member" class="form-control" required></select>
+                </div>
+                <div class="form-group">
+                    <label for="borrowDate">Tanggal Peminjaman:</label>
+                    <input type="date" id="borrowDate" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="returnDate">Tanggal Pengembalian:</label>
+                    <input type="date" id="returnDate" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Simpan Transaksi</button>
+            </form>
         </div>
     </div>
+
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script>
+        // Fungsi untuk memuat semua data
+        function loadBooks() {
+            $.get("/books", function(data) {
+                let bookTableBody = $("#bookTable tbody");
+                bookTableBody.empty();
+                data.forEach(function(book) {
+                    bookTableBody.append(`
+                        <tr>
+                            <td>${book.id}</td>
+                            <td>${book.title}</td>
+                            <td>${book.author}</td>
+                            <td>${book.isbn}</td>
+                            <td>
+                                <button onclick="editBook(${book.id})" class="btn btn-warning">Edit</button>
+                                <button onclick="deleteBook(${book.id})" class="btn btn-danger">Hapus</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        function loadMembers() {
+            $.get("/members", function(data) {
+                let memberTableBody = $("#memberTable tbody");
+                memberTableBody.empty();
+                data.forEach(function(member) {
+                    memberTableBody.append(`
+                        <tr>
+                            <td>${member.id}</td>
+                            <td>${member.name}</td>
+                            <td>${member.email}</td>
+                            <td>${member.membershipDate}</td>
+                            <td>
+                                <button onclick="editMember(${member.id})" class="btn btn-warning">Edit</button>
+                                <button onclick="deleteMember(${member.id})" class="btn btn-danger">Hapus</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        function loadLoanTransactions() {
+            $.get("/transactions", function(data) {
+                let loanTableBody = $("#loanTable tbody");
+                loanTableBody.empty();
+                data.forEach(function(transaction) {
+                    loanTableBody.append(`
+                        <tr>
+                            <td>${transaction.id}</td>
+                            <td>${transaction.book.title}</td>
+                            <td>${transaction.member.name}</td>
+                            <td>${transaction.borrowDate}</td>
+                            <td>${transaction.returnDate}</td>
+                            <td>
+                                <button onclick="editLoan(${transaction.id})" class="btn btn-warning">Edit</button>
+                                <button onclick="deleteLoan(${transaction.id})" class="btn btn-danger">Hapus</button>
+                            </td>
+                        </tr>
+                    `);
+                });
+            });
+        }
+
+        function loadBooksForDropdown() {
+            $.get("/books", function(data) {
+                let bookDropdown = $("#book");
+                bookDropdown.empty();
+                data.forEach(function(book) {
+                    bookDropdown.append(new Option(book.title, book.id));
+                });
+            });
+        }
+
+        function loadMembersForDropdown() {
+            $.get("/members", function(data) {
+                let memberDropdown = $("#member");
+                memberDropdown.empty();
+                data.forEach(function(member) {
+                    memberDropdown.append(new Option(member.name, member.id));
+                });
+            });
+        }
+
+        // Memuat semua data saat halaman dimuat
+        $(document).ready(function() {
+            loadBooks();
+            loadMembers();
+            loadLoanTransactions();
+            loadBooksForDropdown();
+            loadMembersForDropdown();
+        });
+
+        // Tambah/Update buku
+        $("#bookForm").submit(function(e) {
+            e.preventDefault();
+            let id = $("#bookId").val();
+            let url = id ? `/books/${id}` : "/books";
+            let method = id ? "PUT" : "POST";
+
+           
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: "application/json",
+                data: JSON.stringify({
+                    title: $("#title").val(),
+                    author: $("#author").val(),
+                    isbn: $("#isbn").val()
+                }),
+                success: function() {
+                    $("#bookForm")[0].reset();
+                    loadBooks();
+                }
+            });
+        });
+
+        // Tambah/Update anggota
+        $("#memberForm").submit(function(e) {
+            e.preventDefault();
+            let id = $("#memberId").val();
+            let url = id ? `/members/${id}` : "/members";
+            let method = id ? "PUT" : "POST";
+
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: "application/json",
+                data: JSON.stringify({
+                    name: $("#name").val(),
+                    email: $("#email").val(),
+                    membershipDate: $("#membershipDate").val()
+                }),
+                success: function() {
+                    $("#memberForm")[0].reset();
+                    loadMembers();
+                }
+            });
+        });
+
+        // Tambah/Update transaksi peminjaman
+        $("#loanForm").submit(function(e) {
+            e.preventDefault();
+            let id = $("#loanId").val();
+            let url = id ? `/transactions/${id}` : "/transactions";
+            let method = id ? "PUT" : "POST";
+
+            $.ajax({
+                url: url,
+                method: method,
+                contentType: "application/json",
+                data: JSON.stringify({
+                    book: { id: $("#book").val() },
+                    member: { id: $("#member").val() },
+                    borrowDate: $("#borrowDate").val(),
+                    returnDate: $("#returnDate").val()
+                }),
+                success: function() {
+                    $("#loanForm")[0].reset();
+                    loadLoanTransactions();
+                }
+            });
+        });
+
+        // Fungsi edit dan hapus
+        function editBook(id) {
+            $.get(`/books/${id}`, function(data) {
+                $("#bookId").val(data.id);
+                $("#title").val(data.title);
+                $("#author").val(data.author);
+                $("#isbn").val(data.isbn);
+            });
+        }
+
+        function deleteBook(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus buku ini?")) {
+                $.ajax({
+                    url: `/books/${id}`,
+                    method: "DELETE",
+                    success: function() {
+                        loadBooks();
+                    }
+                });
+            }
+        }
+
+        function editMember(id) {
+            $.get(`/members/${id}`, function(data) {
+                $("#memberId").val(data.id);
+                $("#name").val(data.name);
+                $("#email").val(data.email);
+                $("#membershipDate").val(data.membershipDate);
+            });
+        }
+
+        function deleteMember(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus anggota ini?")) {
+                $.ajax({
+                    url: `/members/${id}`,
+                    method: "DELETE",
+                    success: function() {
+                        loadMembers();
+                    }
+                });
+            }
+        }
+
+        function editLoan(id) {
+            $.get(`/transactions/${id}`, function(data) {
+                $("#loanId").val(data.id);
+                $("#book").val(data.book.id);
+                $("#member").val(data.member.id);
+                $("#borrowDate").val(data.borrowDate);
+                $("#returnDate").val(data.returnDate);
+            });
+        }
+
+        function deleteLoan(id) {
+            if (confirm("Apakah Anda yakin ingin menghapus transaksi ini?")) {
+                $.ajax({
+                    url: `/transactions/${id}`,
+                    method: "DELETE",
+                    success: function() {
+                        loadLoanTransactions();
+                    }
+                });
+            }
+        }
+    </script>
 </body>
 </html>

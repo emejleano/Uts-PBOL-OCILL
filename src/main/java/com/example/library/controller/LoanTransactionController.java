@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/transactions")
 public class LoanTransactionController {
 
     @Autowired
@@ -38,22 +38,25 @@ public class LoanTransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<LoanTransaction> createTransaction(@RequestBody LoanTransaction transactionDetails) {
+    public ResponseEntity<?> createTransaction(@RequestBody LoanTransaction transactionDetails) {
         Optional<Book> book = bookRepository.findById(transactionDetails.getBook().getId());
         Optional<Member> member = memberRepository.findById(transactionDetails.getMember().getId());
 
-        if (book.isPresent() && member.isPresent()) {
-            transactionDetails.setBook(book.get());
-            transactionDetails.setMember(member.get());
-            LoanTransaction transaction = loanTransactionRepository.save(transactionDetails);
-            return ResponseEntity.ok(transaction);
-        } else {
-            return ResponseEntity.badRequest().build();
+        if (!book.isPresent()) {
+            return ResponseEntity.badRequest().body("Book not found.");
         }
+        if (!member.isPresent()) {
+            return ResponseEntity.badRequest().body("Member not found.");
+        }
+
+        transactionDetails.setBook(book.get());
+        transactionDetails.setMember(member.get());
+        LoanTransaction transaction = loanTransactionRepository.save(transactionDetails);
+        return ResponseEntity.ok(transaction);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<LoanTransaction> updateTransaction(@PathVariable Long id, @RequestBody LoanTransaction transactionDetails) {
+    public ResponseEntity<?> updateTransaction(@PathVariable Long id, @RequestBody LoanTransaction transactionDetails) {
         Optional<LoanTransaction> transaction = loanTransactionRepository.findById(id);
 
         if (transaction.isPresent()) {
@@ -66,7 +69,10 @@ public class LoanTransactionController {
                 updatedTransaction.setMember(member.get());
                 updatedTransaction.setBorrowDate(transactionDetails.getBorrowDate());
                 updatedTransaction.setReturnDate(transactionDetails.getReturnDate());
-                return ResponseEntity.ok(loanTransactionRepository.save(updatedTransaction));
+                loanTransactionRepository.save(updatedTransaction);
+                return ResponseEntity.ok("Transaction updated successfully.");
+            } else {
+                return ResponseEntity.badRequest().body("Book or Member not found.");
             }
         }
         return ResponseEntity.notFound().build();
